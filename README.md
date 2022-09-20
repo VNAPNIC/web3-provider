@@ -11,18 +11,8 @@ The project supported send and receive messages between Dapp and in-app webview 
 
 ## Usage
 
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder. 
 
-To use this library in your code :
-* add a dependency in your `pubspec.yaml` :
 
-```yaml
-dependencies:
-  web3_provider:
-    path: ../
-```
-* add import in your `dart` code :
 ```dart
 import 'package:web3_provider/web3_provider.dart';
 
@@ -57,10 +47,10 @@ InAppWebViewEIP1193(
     ),
     initialOptions: options
 );
-
-/// If you want use your provider script
-/// you provide [customProvider] and [customWalletName]
 ```
+
+If you want use your provider script
+you provide [customProvider] and [customWalletName]
 
 When you pass data from dapp to your app
 ```dart
@@ -88,5 +78,3 @@ onWebViewCreated: (controller) {
     );
 },
 ```
-## License
-Apache 2.0
