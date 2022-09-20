@@ -11,8 +11,6 @@ The project supported send and receive messages between Dapp and in-app webview 
 
 ## Usage
 
-
-
 ```dart
 import 'package:web3_provider/web3_provider.dart';
 
