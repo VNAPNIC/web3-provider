@@ -2,9 +2,6 @@ import 'package:decimal/decimal.dart';
 
 extension BigIntExt on BigInt {
   String tokenString(int decimals) {
-    if (this == null) {
-      return BigInt.zero.toString();
-    }
     Decimal value = Decimal.fromBigInt(this);
     Decimal decimalValue =
         (value / Decimal.fromInt(10).pow(decimals).toDecimal()).toDecimal();

@@ -1,5 +1,4 @@
 import 'dart:typed_data';
-import 'dart:ui';
 
 import 'package:eth_sig_util/util/utils.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +8,7 @@ import 'package:web3dart/web3dart.dart';
 import 'package:http/http.dart';
 
 import 'js_bridge_bean.dart';
-import 'widget/payment_sheet_page.dart'; //You can also import the browser version
+import 'widget/payment_sheet_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -180,8 +179,8 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: InAppWebViewEIP1193(
-        customPathProvider: 'assets/example-trust-min.js',
-        customWalletName: 'trustwallet',
+        // customPathProvider: 'assets/example-trust-min.js',
+        // customWalletName: 'trustwallet',
         chainId: chainId,
         rpcUrl: 'https://bsc-dataseed.binance.org/',
         walletAddress: walletAddress,

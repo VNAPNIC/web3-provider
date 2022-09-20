@@ -840,7 +840,7 @@ class _InAppWebViewEIP1193State extends State<InAppWebViewEIP1193> {
     String? web3;
     String? walletName = widget.customWalletName ?? 'trustwallet';
     String path = widget.customPathProvider ??
-        'packages/web3_provider/assets/example-trust-min.js';
+        'packages/web3_provider/assets/trust-min.js';
     web3 = await DefaultAssetBundle.of(context).loadString(path);
     var config = """
          (function() {
@@ -866,7 +866,7 @@ class _InAppWebViewEIP1193State extends State<InAppWebViewEIP1193> {
     }
   }
 
-  ///
+  /// Callback handle data receive from dapp
   Future<void> _jsBridgeCallBack(String message) async {
     Map<dynamic, dynamic> rawData = JsonUtil.getObj(message);
     final name = rawData["name"];
