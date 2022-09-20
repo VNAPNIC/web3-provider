@@ -11,13 +11,12 @@ dependencies:
   flutter:
     sdk: flutter
 
-  decimal: ^2.1.0
+  decimal: ^2.3.0
   flutter_inappwebview: ^5.4.3+7
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^2.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
