@@ -87,6 +87,7 @@ class _CommunicateDappState extends State<CommunicateDapp> {
               String url = param['url'];
               Map<String, dynamic>? headers = param['headers'];
               Map<String, dynamic>? body = param['body'];
+
               /// Handle with data received.
 
               /// Pass to dapp

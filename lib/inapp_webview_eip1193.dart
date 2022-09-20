@@ -550,8 +550,6 @@ class InAppWebViewEIP1193 extends StatefulWidget {
   ///**Official Android API**: https://developer.android.com/reference/android/webkit/WebViewClient#onScaleChanged(android.webkit.WebView,%20float,%20float)
   ///
   ///**Official iOS API**: https://developer.apple.com/documentation/uikit/uiscrollviewdelegate/1619409-scrollviewdidzoom
-  ///Use [onZoomScaleChanged] instead.
-  @Deprecated('Use `onZoomScaleChanged` instead')
   final void Function(
           InAppWebViewController controller, double oldScale, double newScale)?
       onZoomScaleChanged;
@@ -889,7 +887,8 @@ class _InAppWebViewEIP1193State extends State<InAppWebViewEIP1193> {
             rawData, EIP1193.signTypedMessage, _webViewController);
       }
     } else {
-      widget.signCallback(rawData, EIP1193.addEthereumChain, _webViewController);
+      widget.signCallback(
+          rawData, EIP1193.addEthereumChain, _webViewController);
     }
   }
 

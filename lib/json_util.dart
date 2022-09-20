@@ -6,7 +6,7 @@ import 'package:flutter/foundation.dart';
 class JsonUtil {
   /// Converts object [value] to a JSON string.
   static String? encodeObj(Object value) {
-    return value == null ? null : json.encode(value);
+    return json.encode(value);
   }
 
   /// Converts JSON string [source] to object.
@@ -15,7 +15,6 @@ class JsonUtil {
     try {
       return json.decode(source);
     } catch (e) {
-
       return null;
     }
   }
@@ -24,7 +23,6 @@ class JsonUtil {
     if (source == null || source.isEmpty) return null;
     try {
       return await compute(getObj, source);
-
     } catch (e) {
       return null;
     }
@@ -32,7 +30,7 @@ class JsonUtil {
 
   /// Converts JSON string list [source] to object list.
   static List<T>? getObjList<T>(String source) {
-    if (source == null || source.isEmpty) return null;
+    if (source.isEmpty) return null;
     try {
       List? list = json.decode(source);
 

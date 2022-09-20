@@ -235,8 +235,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   fee: '0',
                   confirm: () async {
                     final credentials = EthPrivateKey.fromHex(prvKey);
-                    Uint8List message =
-                    await credentials.sign(hexToBytes(raw));
+                    Uint8List message = await credentials.sign(hexToBytes(raw));
                     String result = bytesToHex(message, include0x: true);
                     controller?.sendResult(result, id);
                   },
