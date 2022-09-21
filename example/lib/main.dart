@@ -250,7 +250,7 @@ class _MyHomePageState extends State<MyHomePage> {
         },
         initialUrlRequest: URLRequest(
           url: Uri.parse(
-            'https://app-pilot.position.exchange?mode=posi_app&theme=dark',
+            'https://position.exchange',
           ),
         ),
         initialOptions: options,
