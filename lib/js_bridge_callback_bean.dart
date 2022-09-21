@@ -2,7 +2,7 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
 /// Extension's [InAppWebViewController]
 extension Web3Result on InAppWebViewController {
-  /// send [Canceled] error to dapp
+  /// send ["Canceled"] error to dapp
   void cancel(int id) {
     sendError("Canceled", id);
   }

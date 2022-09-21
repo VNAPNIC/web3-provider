@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 
-/// Json Util.
+/// Convert data object to string and reverse
 class JsonUtil {
   /// Converts object [value] to a JSON string.
   static String? encodeObj(Object value) {
