@@ -1,6 +1,6 @@
 name: web3_provider
 description: The bridge communicate between in-app webview and mobile-app by standard EIP-1193.
-version: 1.0.2
+version: 1.0.3
 homepage: https://github.com/VNAPNIC/web3-provider
 
 environment:

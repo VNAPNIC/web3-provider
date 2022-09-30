@@ -1,3 +1,6 @@
+## 1.0.3
+- connect to new wallet 
+
 ## 1.0.2
 
 * update docs

@@ -41,7 +41,7 @@ class InAppWebViewEIP1193 extends StatefulWidget {
   const InAppWebViewEIP1193({
     Key? key,
     this.customPathProvider,
-    this.customWalletName,
+    this.customWalletName = 'trustwallet',
     required this.rpcUrl,
     required this.chainId,
     required this.walletAddress,
@@ -820,9 +820,6 @@ class _InAppWebViewEIP1193State extends State<InAppWebViewEIP1193> {
   /// Script provider will inject in web app
   String? jsProviderScript;
 
-  /// Function initial web3
-  String? functionInject;
-
   /// Load provider and function initial web3 end
   bool isLoadJs = false;
   InAppWebViewController? _webViewController;
@@ -833,13 +830,22 @@ class _InAppWebViewEIP1193State extends State<InAppWebViewEIP1193> {
     _loadWeb3();
   }
 
-  ///Load provider and function initial web3 to inject web app
+  ///Load provider initial web3 to inject web app
   Future<void> _loadWeb3() async {
     String? web3;
-    String? walletName = widget.customWalletName ?? 'trustwallet';
     String path = widget.customPathProvider ??
         'packages/web3_provider/assets/trust-min.js';
     web3 = await DefaultAssetBundle.of(context).loadString(path);
+    if (mounted) {
+      setState(() {
+        jsProviderScript = web3;
+        isLoadJs = true;
+      });
+    }
+  }
+
+  /// Get function with newest config
+  String _getFunctionInject() {
     var config = """
          (function() {
            var config = {
@@ -848,20 +854,14 @@ class _InAppWebViewEIP1193State extends State<InAppWebViewEIP1193> {
                 address: "${widget.walletAddress}",
                 isDebug: ${widget.isDebug}
             };
-            window.ethereum = new $walletName.Provider(config);
-            window.web3 = new $walletName.Web3(window.ethereum);
-            $walletName.postMessage = (jsonString) => {
+            window.ethereum = new ${widget.customWalletName}.Provider(config);
+            window.web3 = new ${widget.customWalletName}.Web3(window.ethereum);
+            ${widget.customWalletName}.postMessage = (jsonString) => {
                alert("$_alertTitle" + JSON.stringify(jsonString || "{}"))
             };
         })();
         """;
-    if (mounted) {
-      setState(() {
-        jsProviderScript = web3;
-        functionInject = config;
-        isLoadJs = true;
-      });
-    }
+    return config;
   }
 
   /// Callback handle data receive from dapp
@@ -911,7 +911,7 @@ class _InAppWebViewEIP1193State extends State<InAppWebViewEIP1193> {
                               UserScriptInjectionTime.AT_DOCUMENT_START,
                         ),
                         UserScript(
-                          source: functionInject ?? '',
+                          source: _getFunctionInject(),
                           injectionTime:
                               UserScriptInjectionTime.AT_DOCUMENT_START,
                         ),
@@ -931,7 +931,7 @@ class _InAppWebViewEIP1193State extends State<InAppWebViewEIP1193> {
                   source: jsProviderScript ?? '',
                 );
                 await _webViewController?.evaluateJavascript(
-                  source: functionInject ?? '',
+                  source: _getFunctionInject(),
                 );
               }
             },
