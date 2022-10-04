@@ -1,8 +1,8 @@
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:eth_sig_util/util/utils.dart';
 import 'package:flutter/material.dart';
-import 'package:untitled/communicate_dapp.dart';
 import 'package:web3_provider/web3_provider.dart';
 import 'package:web3dart/json_rpc.dart';
 import 'package:web3dart/web3dart.dart';
@@ -11,7 +11,11 @@ import 'package:http/http.dart';
 import 'js_bridge_bean.dart';
 import 'widget/payment_sheet_page.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  if (Platform.isAndroid) {
+    await AndroidInAppWebViewController.setWebContentsDebuggingEnabled(true);
+  }
   runApp(const MyApp());
 }
 
@@ -47,7 +51,6 @@ class _MyHomePageState extends State<MyHomePage> {
   final String prvKey =
       '0a8a8b091ae22bef656b3910b1541321a95fd62b6ea3ef4a8cc1589abd4f0d2a';
   late Web3Client ethClient;
-  InAppWebViewController? _webViewController;
 
   InAppWebViewGroupOptions options = InAppWebViewGroupOptions(
     crossPlatform: InAppWebViewOptions(
@@ -173,6 +176,24 @@ class _MyHomePageState extends State<MyHomePage> {
     ethClient = Web3Client(apiUrl, httpClient);
   }
 
+  String customFunctionInject({
+    required int chainId,
+    required String rpcUrl,
+    required String walletAddress,
+    bool? isDebug = true,
+  }) {
+    return """
+         {
+            ethereum:{
+              chainId: $chainId,
+              rpcUrl: "$rpcUrl",
+              address: "$walletAddress",
+              isDebug: $isDebug  
+            }
+         }
+        """;
+  }
+
   @override
   Widget build(BuildContext context) {
     int chainId = 56;
@@ -183,7 +204,6 @@ class _MyHomePageState extends State<MyHomePage> {
             onPressed: () {
               walletAddress = '0x8F0c3C6C466d2801F6D88002948a2d845f56B129';
               setState(() {});
-              _webViewController?.reload();
             },
             icon: const Icon(Icons.add),
           )
@@ -191,85 +211,88 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: InAppWebViewEIP1193(
-          customPathProvider: 'assets/example-trust-min.js',
-          customWalletName: 'trustwallet',
-          chainId: chainId,
-          rpcUrl: 'https://bsc-dataseed.binance.org/',
-          walletAddress: walletAddress,
-          signCallback: (params, eip1193, controller) {
-            final id = params["id"];
-            switch (eip1193) {
-              case EIP1193.requestAccounts:
-                controller?.setAddress(walletAddress, id);
-                print('requestAccounts');
-                break;
-              case EIP1193.signTransaction:
-                Map<String, dynamic> object = params["object"];
-                BridgeParams bridge = BridgeParams.fromJson(object);
-                _signTransaction(
-                    bridge: bridge,
-                    chainId: chainId,
-                    cancel: () {
-                      controller?.cancel(id);
-                    },
-                    success: (idHash) {
-                      controller?.sendResult(idHash, id);
-                    });
-                print('signTransaction');
-                break;
-              case EIP1193.signMessage:
-              case EIP1193.signPersonalMessage:
-                Map<String, dynamic> object = params["object"];
-                String data = object["data"];
-                _showModalConfirm(
-                    from: walletAddress,
-                    to: '',
-                    value: BigInt.zero,
-                    fee: '0',
-                    confirm: () async {
-                      final credentials = EthPrivateKey.fromHex(prvKey);
-                      Uint8List message = await credentials
-                          .signPersonalMessage(hexToBytes(data));
-                      String result = bytesToHex(message, include0x: true);
-                      controller?.sendResult(result, id);
-                    },
-                    cancel: () {
-                      controller?.cancel(id);
-                    });
-                break;
-              case EIP1193.signTypedMessage:
-                Map<String, dynamic> object = params["object"];
-                String raw = object["raw"];
-                _showModalConfirm(
-                    from: walletAddress,
-                    to: '',
-                    value: BigInt.zero,
-                    fee: '0',
-                    confirm: () async {
-                      final credentials = EthPrivateKey.fromHex(prvKey);
-                      Uint8List message =
-                          await credentials.sign(hexToBytes(raw));
-                      String result = bytesToHex(message, include0x: true);
-                      controller?.sendResult(result, id);
-                    },
-                    cancel: () {
-                      controller?.cancel(id);
-                    });
-                break;
-              case EIP1193.addEthereumChain:
-                print('addEthereumChain');
-                break;
-            }
-          },
-          initialUrlRequest: URLRequest(
-            url: Uri.parse(
-              'https://pancakeswap.finance/',
-            ),
+        // use custom provider
+        // customPathProvider: 'assets/custom.provider.js',
+        // customWalletName: 'posiwallet',
+        // customConfigFunction: customFunctionInject(
+        //   chainId: chainId,
+        //   rpcUrl: 'https://bsc-dataseed.binance.org/',
+        //   walletAddress: walletAddress,
+        // ),
+        // use default provider
+        chainId: chainId,
+        rpcUrl: 'https://bsc-dataseed.binance.org/',
+        walletAddress: walletAddress,
+        signCallback: (params, eip1193, controller) {
+          final id = params["id"];
+          switch (eip1193) {
+            case EIP1193.requestAccounts:
+              controller?.setAddress(walletAddress, id);
+              print('requestAccounts');
+              break;
+            case EIP1193.signTransaction:
+              Map<String, dynamic> object = params["object"];
+              BridgeParams bridge = BridgeParams.fromJson(object);
+              _signTransaction(
+                  bridge: bridge,
+                  chainId: chainId,
+                  cancel: () {
+                    controller?.cancel(id);
+                  },
+                  success: (idHash) {
+                    controller?.sendResult(idHash, id);
+                  });
+              print('signTransaction');
+              break;
+            case EIP1193.signMessage:
+            case EIP1193.signPersonalMessage:
+              Map<String, dynamic> object = params["object"];
+              String data = object["data"];
+              _showModalConfirm(
+                  from: walletAddress,
+                  to: '',
+                  value: BigInt.zero,
+                  fee: '0',
+                  confirm: () async {
+                    final credentials = EthPrivateKey.fromHex(prvKey);
+                    Uint8List message =
+                        await credentials.signPersonalMessage(hexToBytes(data));
+                    String result = bytesToHex(message, include0x: true);
+                    controller?.sendResult(result, id);
+                  },
+                  cancel: () {
+                    controller?.cancel(id);
+                  });
+              break;
+            case EIP1193.signTypedMessage:
+              Map<String, dynamic> object = params["object"];
+              String raw = object["raw"];
+              _showModalConfirm(
+                  from: walletAddress,
+                  to: '',
+                  value: BigInt.zero,
+                  fee: '0',
+                  confirm: () async {
+                    final credentials = EthPrivateKey.fromHex(prvKey);
+                    Uint8List message = await credentials.sign(hexToBytes(raw));
+                    String result = bytesToHex(message, include0x: true);
+                    controller?.sendResult(result, id);
+                  },
+                  cancel: () {
+                    controller?.cancel(id);
+                  });
+              break;
+            case EIP1193.addEthereumChain:
+              print('addEthereumChain');
+              break;
+          }
+        },
+        initialUrlRequest: URLRequest(
+          url: Uri.parse(
+            'https://webapp-qc.nonprodposi.com/bonds/p2p',
           ),
-          initialOptions: options,
-          onWebViewCreated: (controller) {
-            _webViewController = controller;
-          }),
+        ),
+      ),
     );
   }
 }

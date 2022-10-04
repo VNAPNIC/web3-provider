@@ -40,12 +40,12 @@ enum EIP1193 {
 class InAppWebViewEIP1193 extends StatefulWidget {
   const InAppWebViewEIP1193({
     Key? key,
-    this.customPathProvider,
-    this.customWalletName = 'trustwallet',
-    required this.rpcUrl,
-    required this.chainId,
-    required this.walletAddress,
     required this.signCallback,
+    this.customPathProvider,
+    this.customWalletName = 'posiwallet',
+    this.rpcUrl,
+    this.chainId,
+    this.walletAddress,
     this.isDebug = true,
     this.windowId,
     this.initialUrlRequest,
@@ -110,25 +110,36 @@ class InAppWebViewEIP1193 extends StatefulWidget {
     this.iosOnNavigationResponse,
     this.iosShouldAllowDeprecatedTLS,
     this.gestureRecognizers,
+    this.customConfigFunction,
   }) : super(key: key);
 
-  /// if you do not use provider provide by library you pass by parameter [customPathProvider]
-  /// by default use file assets/example-trust-min.js
+  //------------------------------------------------------------------------------
+  /// If use custom provider, notice use [customPathProvider], [customWalletName], [customConfigFunction].
+  /// If use [InAppWebViewEIP1193]'s provider provide is [PosiProvicer]. Please provide [rpcUrl], [chainId], [walletAddress].
+  /// https://github.com/PositionExchange/posi-web3-provider
+
+  /// If you do not use provider provide by library you pass by parameter [customPathProvider]
+  /// by default use file assets/posi.min.js
   final String? customPathProvider;
 
   /// Wallet name, use to initial web3 by function _loadWeb3()
-  /// if you custom provider (pass [customPathProvider]) please notice [customWalletName]
-  /// Please check in file provider, by default [example-trust-min.js] is 'trustwallet'
+  /// Please check in file provider, by default [posi.min.js] is 'posiwallet'
   final String? customWalletName;
 
+  /// Function to initial web3 library for web interact with smart contract.
+  /// Script depend on [provider]
+  final String? customConfigFunction;
+
+  //------------------------------------------------------------------------------
+
   /// rpc url of chain you connect
-  final String rpcUrl;
+  final String? rpcUrl;
 
   /// chainId of chain you connect
-  final int chainId;
+  final int? chainId;
 
   /// your wallet you connect
-  final String walletAddress;
+  final String? walletAddress;
   final bool isDebug;
 
   /// Callback when web app interact with data on-chain (by use web3js library)
@@ -834,7 +845,7 @@ class _InAppWebViewEIP1193State extends State<InAppWebViewEIP1193> {
   Future<void> _loadWeb3() async {
     String? web3;
     String path = widget.customPathProvider ??
-        'packages/web3_provider/assets/trust-min.js';
+        'packages/web3_provider/assets/posi.min.js';
     web3 = await DefaultAssetBundle.of(context).loadString(path);
     if (mounted) {
       setState(() {
@@ -846,16 +857,20 @@ class _InAppWebViewEIP1193State extends State<InAppWebViewEIP1193> {
 
   /// Get function with newest config
   String _getFunctionInject() {
-    var config = """
-         (function() {
-           var config = {
+    var paramConfig = widget.customConfigFunction ??
+        """{
+              ethereum: {
                 chainId: ${widget.chainId},
                 rpcUrl: "${widget.rpcUrl}",
                 address: "${widget.walletAddress}",
-                isDebug: ${widget.isDebug}
-            };
+                isDebug: ${widget.isDebug}  
+              }
+            }""";
+
+    var config = """
+         (function() {
+           var config = $paramConfig;
             window.ethereum = new ${widget.customWalletName}.Provider(config);
-            window.web3 = new ${widget.customWalletName}.Web3(window.ethereum);
             ${widget.customWalletName}.postMessage = (jsonString) => {
                alert("$_alertTitle" + JSON.stringify(jsonString || "{}"))
             };

@@ -1,5 +1,8 @@
+## 1.1.0
+* allow custom provider
+
 ## 1.0.3
-- connect to new wallet 
+* connect to new wallet 
 
 ## 1.0.2
 
