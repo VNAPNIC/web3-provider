@@ -1,3 +1,6 @@
+## 1.1.1
+* update version flutter_inappwebview
+
 ## 1.1.0
 * allow custom provider
 

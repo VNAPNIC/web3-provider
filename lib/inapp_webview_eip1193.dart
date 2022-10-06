@@ -115,7 +115,7 @@ class InAppWebViewEIP1193 extends StatefulWidget {
 
   //------------------------------------------------------------------------------
   /// If use custom provider, notice use [customPathProvider], [customWalletName], [customConfigFunction].
-  /// If use [InAppWebViewEIP1193]'s provider provide is [PosiProvicer]. Please provide [rpcUrl], [chainId], [walletAddress].
+  /// If use [InAppWebViewEIP1193]'s provider provide is [PosiProvider]. Please provide [rpcUrl], [chainId], [walletAddress].
   /// https://github.com/PositionExchange/posi-web3-provider
 
   /// If you do not use provider provide by library you pass by parameter [customPathProvider]
