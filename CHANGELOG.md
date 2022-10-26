@@ -1,3 +1,6 @@
+## 1.1.2
+* update mechanism handle request via EIP1193
+
 ## 1.1.1
 * update version flutter_inappwebview
 
